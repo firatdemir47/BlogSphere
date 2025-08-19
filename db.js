@@ -1,15 +1,15 @@
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  user: "firat",       // PostgreSQL kullanıcı adın
+  user: "firat",       
   host: "localhost",
-  database: "blogdb",  // oluşturduğumuz database
-  password: "",        // şifren varsa ekle
+  database: "blogdb",  
+  password: "",       
   port: 5432
 });
 
 pool.on("connect", () => {
-  console.log("PostgreSQL bağlantısı başarılı ✅");
+  console.log("PostgreSQL bağlantısı başarılı ");
 });
 
 pool.on("error", (err) => {

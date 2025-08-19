@@ -1,6 +1,5 @@
 const pool = require("../db");
 
-// Tüm blogları getir
 const getAllBlogs = async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM blog ORDER BY created_at DESC");
@@ -11,7 +10,6 @@ const getAllBlogs = async (req, res) => {
   }
 };
 
-// Tek blogu id ile getir
 const getBlogById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -26,7 +24,6 @@ const getBlogById = async (req, res) => {
   }
 };
 
-// Yeni blog ekle
 const createBlog = async (req, res) => {
   const { title, content, author } = req.body;
   try {
@@ -41,7 +38,6 @@ const createBlog = async (req, res) => {
   }
 };
 
-// Blog güncelle
 const updateBlog = async (req, res) => {
   const { id } = req.params;
   const { title, content, author } = req.body;
@@ -60,7 +56,6 @@ const updateBlog = async (req, res) => {
   }
 };
 
-// Blog sil
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
   try {
