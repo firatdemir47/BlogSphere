@@ -8,9 +8,6 @@ app.use(express.json());
 const blogRoutes = require("./routes/blogRoutes");
 app.use("/api/blogs", blogRoutes);
 
-const commentRoutes = require("./routes/commentRoutes");
-app.use("/api/blogs/:blogId/comments", commentRoutes);
-
 app.get("/api/health", (req, res) => {
   res.status(200).json({ ok: true, message: "API çalışıyor", timestamp: new Date().toISOString() });
 });
