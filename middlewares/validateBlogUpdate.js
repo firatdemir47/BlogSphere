@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator');
 
-const validateBlog = [
+const validateBlogUpdate = [
   body('title').trim().notEmpty().withMessage('Başlık boş olamaz'),
   body('content').trim().notEmpty().withMessage('İçerik boş olamaz'),
   body('author').trim().notEmpty().withMessage('Yazar boş olamaz'),
@@ -13,4 +13,5 @@ const validateBlog = [
   },
 ];
 
-module.exports = validateBlog;
+module.exports = validateBlogUpdate;
+    

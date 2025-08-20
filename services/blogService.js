@@ -11,7 +11,15 @@ const getBlog = async (id) => {
 const addBlog = (data) => blogRepo.createBlog(data);
 
 const editBlog = async (id, data) => {
-  const updated = await blogRepo.updateBlog(id, data);
+  const title = (data && typeof data.title === 'string') ? data.title.trim() : '';
+  const content = (data && typeof data.content === 'string') ? data.content.trim() : '';
+  const author = (data && typeof data.author === 'string') ? data.author.trim() : '';
+
+  if (!title || !content || !author) {
+    throw new Error('Başlık, içerik ve yazar boş olamaz');
+  }
+
+  const updated = await blogRepo.updateBlog(id, { title, content, author });
   if (!updated) throw new Error('Blog bulunamadı');
   return updated;
 };

@@ -33,7 +33,8 @@ const updateBlog = async (req, res) => {
     const blog = await blogService.editBlog(req.params.id, req.body);
     res.json(blog);
   } catch (err) {
-    res.status(404).json({ error: err.message });
+    const status = err.message === 'Blog bulunamadı' ? 404 : 400;
+    res.status(status).json({ error: err.message });
   }
 };
 
