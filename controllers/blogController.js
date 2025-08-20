@@ -1,72 +1,48 @@
-const pool = require("../db");
+const blogService = require('../services/blogService');
 
 const getAllBlogs = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM blog ORDER BY created_at DESC");
-    res.json(result.rows);
+    const blogs = await blogService.listAllBlogs();
+    res.json(blogs);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Bloglar getirilemedi" });
+    res.status(500).json({ error: err.message });
   }
 };
 
 const getBlogById = async (req, res) => {
-  const { id } = req.params;
   try {
-    const result = await pool.query("SELECT * FROM blog WHERE id=$1", [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Blog bulunamadı" });
-    }
-    res.json(result.rows[0]);
+    const blog = await blogService.getBlog(req.params.id);
+    res.json(blog);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Blog getirilemedi" });
+    res.status(404).json({ error: err.message });
   }
 };
 
 const createBlog = async (req, res) => {
-  const { title, content, author } = req.body;
   try {
-    const result = await pool.query(
-      "INSERT INTO blog (title, content, author) VALUES ($1, $2, $3) RETURNING *",
-      [title, content, author]
-    );
-    res.status(201).json(result.rows[0]);
+    const blog = await blogService.addBlog(req.body);
+    res.status(201).json(blog);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Blog eklenemedi" });
+    res.status(400).json({ error: err.message });
   }
 };
 
 const updateBlog = async (req, res) => {
-  const { id } = req.params;
-  const { title, content, author } = req.body;
   try {
-    const result = await pool.query(
-      "UPDATE blog SET title=$1, content=$2, author=$3 WHERE id=$4 RETURNING *",
-      [title, content, author, id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Blog bulunamadı" });
-    }
-    res.json(result.rows[0]);
+    const blog = await blogService.editBlog(req.params.id, req.body);
+    res.json(blog);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Blog güncellenemedi" });
+    res.status(404).json({ error: err.message });
   }
 };
 
 const deleteBlog = async (req, res) => {
-  const { id } = req.params;
   try {
-    const result = await pool.query("DELETE FROM blog WHERE id=$1 RETURNING *", [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Blog bulunamadı" });
-    }
-    res.json({ message: "Blog silindi", blog: result.rows[0] });
+    const deleted = await blogService.removeBlog(req.params.id);
+    res.json({ message: "Blog silindi", blog: deleted });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Blog silinemedi" });
+    res.status(404).json({ error: err.message });
   }
 };
 

@@ -1,46 +1,29 @@
-const pool = require("../db");
+const commentService = require('../services/commentService');
 
 const getCommentsByBlogId = async (req, res) => {
-  const { blogId } = req.params;
   try {
-    const result = await pool.query(
-      "SELECT * FROM comment WHERE blog_id=$1 ORDER BY created_at ASC",
-      [blogId]
-    );
-    res.json(result.rows);
+    const comments = await commentService.listComments(req.params.blogId);
+    res.json(comments);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Yorumlar getirilemedi" });
+    res.status(500).json({ error: err.message });
   }
 };
 
 const createComment = async (req, res) => {
-  const { blogId } = req.params;
-  const { content, user_name } = req.body;
   try {
-    const result = await pool.query(
-      "INSERT INTO comment (blog_id, content, user_name) VALUES ($1, $2, $3) RETURNING *",
-      [blogId, content, user_name]
-    );
-    res.status(201).json(result.rows[0]);
+    const comment = await commentService.addComment(req.params.blogId, req.body);
+    res.status(201).json(comment);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Yorum eklenemedi" });
+    res.status(400).json({ error: err.message });
   }
 };
 
-
 const deleteComment = async (req, res) => {
-  const { id } = req.params;
   try {
-    const result = await pool.query("DELETE FROM comment WHERE id=$1 RETURNING *", [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Yorum bulunamadı" });
-    }
-    res.json({ message: "Yorum silindi", comment: result.rows[0] });
+    const deleted = await commentService.removeComment(req.params.id);
+    res.json({ message: "Yorum silindi", comment: deleted });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Yorum silinemedi" });
+    res.status(404).json({ error: err.message });
   }
 };
 
