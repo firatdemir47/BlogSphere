@@ -1,16 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const blogController = require("../controllers/blogController");
-const commentRoutes = require("./commentRoutes"); // comment route ekliyoruz
+const commentRoutes = require("./commentRoutes");
 const validateBlog = require('../middlewares/validateBlog');
-const validateBlogUpdate = require('../middlewares/validateBlogUpdate'); // yeni ekledik
+const validateBlogUpdate = require('../middlewares/validateBlogUpdate');
+const { authenticateToken, optionalAuth } = require('../middlewares/authMiddleware');
 
-// Blog rotaları
-router.get("/", blogController.getAllBlogs);
-router.get("/:id", blogController.getBlogById);
-router.post("/", validateBlog, blogController.createBlog); // create validation eklendi
-router.put("/:id", validateBlogUpdate, blogController.updateBlog); // update validation eklendi
-router.delete("/:id", blogController.deleteBlog);
+// Public routes (authentication gerekmez)
+router.get("/", optionalAuth, blogController.getAllBlogs);
+router.get("/category/:categoryId", optionalAuth, blogController.getBlogsByCategory);
+router.get("/author/:authorId", optionalAuth, blogController.getBlogsByAuthor);
+router.get("/search", optionalAuth, blogController.searchBlogs);
+router.get("/:id", optionalAuth, blogController.getBlogById);
+
+// Protected routes (authentication gerekir)
+router.post("/", authenticateToken, validateBlog, blogController.createBlog);
+router.put("/:id", authenticateToken, validateBlogUpdate, blogController.updateBlog);
+router.delete("/:id", authenticateToken, blogController.deleteBlog);
 
 // Comment rotaları nested olarak
 router.use("/:blogId/comments", commentRoutes);
