@@ -3,20 +3,63 @@ const commentRepo = require('../repositories/commentRepository');
 const listComments = (blogId) => commentRepo.getCommentsByBlogId(blogId);
 
 const addComment = (blogId, data) => {
-  const userName = (data && typeof data.user_name === 'string') ? data.user_name.trim() : '';
   const content = (data && typeof data.content === 'string') ? data.content.trim() : '';
+  const authorId = data.authorId;
 
-  if (!userName || !content) {
-    throw new Error('Kullanıcı adı ve içerik boş olamaz');
+  if (!content) {
+    throw new Error('Yorum içeriği boş olamaz');
   }
 
-  return commentRepo.createComment({ blogId, content, user_name: userName });
+  if (!authorId) {
+    throw new Error('Kullanıcı ID gerekli');
+  }
+
+  return commentRepo.createComment({ blogId, content, authorId });
 };
 
-const removeComment = async (id) => {
+const removeComment = async (id, authorId) => {
+  // Yorumun yazarı mı kontrol et
+  const comment = await commentRepo.getCommentById(id);
+  if (!comment) throw new Error('Yorum bulunamadı');
+  
+  if (comment.author_id !== authorId) {
+    throw new Error('Bu yorumu silme yetkiniz yok');
+  }
+
   const deleted = await commentRepo.deleteComment(id);
-  if (!deleted) throw new Error('Yorum bulunamadı');
   return deleted;
 };
 
-module.exports = { listComments, addComment, removeComment };
+// Yorum güncelleme
+const editComment = async (id, data) => {
+  const content = (data && typeof data.content === 'string') ? data.content.trim() : '';
+  const authorId = data.authorId;
+
+  if (!content) {
+    throw new Error('Yorum içeriği boş olamaz');
+  }
+
+  // Yorumun yazarı mı kontrol et
+  const comment = await commentRepo.getCommentById(id);
+  if (!comment) throw new Error('Yorum bulunamadı');
+  
+  if (comment.author_id !== authorId) {
+    throw new Error('Bu yorumu düzenleme yetkiniz yok');
+  }
+
+  const updated = await commentRepo.updateComment(id, { content });
+  return updated;
+};
+
+// Kullanıcının yorumlarını getirme
+const getCommentsByAuthor = async (authorId) => {
+  return await commentRepo.getCommentsByAuthor(authorId);
+};
+
+module.exports = { 
+  listComments, 
+  addComment, 
+  removeComment,
+  editComment,
+  getCommentsByAuthor
+};
