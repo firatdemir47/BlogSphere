@@ -52,6 +52,19 @@ const searchBlogs = async (searchTerm) => {
   return await blogRepo.searchBlogs(searchTerm);
 };
 
+// View counter artırma
+const incrementViewCount = async (blogId) => {
+  const blog = await blogRepo.getBlogById(blogId);
+  if (!blog) throw new Error('Blog bulunamadı');
+  
+  return await blogRepo.incrementViewCount(blogId);
+};
+
+// En popüler blog'ları getirme
+const getPopularBlogs = async (limit = 10) => {
+  return await blogRepo.getPopularBlogs(limit);
+};
+
 module.exports = { 
   listAllBlogs, 
   getBlog, 
@@ -60,5 +73,7 @@ module.exports = {
   removeBlog,
   getBlogsByCategory,
   getBlogsByAuthor,
-  searchBlogs
+  searchBlogs,
+  incrementViewCount,
+  getPopularBlogs
 };
