@@ -87,6 +87,29 @@ const searchBlogs = async (searchTerm) => {
   return result.rows;
 };
 
+// View counter artırma
+const incrementViewCount = async (blogId) => {
+  const result = await pool.query(
+    "UPDATE blogs SET view_count = view_count + 1 WHERE id = $1 RETURNING view_count",
+    [blogId]
+  );
+  return result.rows[0]?.view_count || 0;
+};
+
+// En popüler blog'ları getirme (view count'a göre)
+const getPopularBlogs = async (limit = 10) => {
+  const query = `
+    SELECT b.*, u.username as author_name, c.name as category_name
+    FROM blogs b
+    LEFT JOIN users u ON b.author_id = u.id
+    LEFT JOIN categories c ON b.category_id = c.id
+    ORDER BY b.view_count DESC, b.created_at DESC
+    LIMIT $1
+  `;
+  const result = await pool.query(query, [limit]);
+  return result.rows;
+};
+
 module.exports = { 
   getAllBlogs, 
   getBlogById, 
@@ -95,5 +118,7 @@ module.exports = {
   deleteBlog,
   getBlogsByCategory,
   getBlogsByAuthor,
-  searchBlogs
+  searchBlogs,
+  incrementViewCount,
+  getPopularBlogs
 };
