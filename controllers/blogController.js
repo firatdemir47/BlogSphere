@@ -164,6 +164,43 @@ const searchBlogs = async (req, res) => {
   }
 };
 
+// View counter artırma
+const incrementViewCount = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const newViewCount = await blogService.incrementViewCount(blogId);
+    
+    res.json({
+      success: true,
+      message: 'View count artırıldı',
+      data: { viewCount: newViewCount }
+    });
+  } catch (err) {
+    res.status(404).json({ 
+      success: false,
+      error: err.message 
+    });
+  }
+};
+
+// En popüler blog'ları getirme
+const getPopularBlogs = async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    const blogs = await blogService.getPopularBlogs(parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: blogs
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false,
+      error: err.message 
+    });
+  }
+};
+
 module.exports = { 
   getAllBlogs, 
   getBlogById, 
@@ -172,5 +209,7 @@ module.exports = {
   deleteBlog,
   getBlogsByCategory,
   getBlogsByAuthor,
-  searchBlogs
+  searchBlogs,
+  incrementViewCount,
+  getPopularBlogs
 };
