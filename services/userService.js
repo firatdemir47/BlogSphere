@@ -124,6 +124,43 @@ class UserService {
             throw new Error('Geçersiz token');
         }
     }
+
+    // Şifre değiştirme
+    async changePassword(userId, currentPassword, newPassword) {
+        // Kullanıcıyı bul
+        const user = await userRepository.findById(userId);
+        if (!user) {
+            throw new Error('Kullanıcı bulunamadı');
+        }
+
+        // Debug: Kullanıcı bilgilerini kontrol et
+        console.log('User ID:', userId);
+        console.log('Current Password:', currentPassword);
+        console.log('User Password Hash:', user.password_hash);
+        console.log('User Object:', user);
+
+        // Mevcut şifreyi kontrol et
+        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!isCurrentPasswordValid) {
+            throw new Error('Mevcut şifre yanlış');
+        }
+
+        // Yeni şifre validasyonu
+        if (newPassword.length < 6) {
+            throw new Error('Yeni şifre en az 6 karakter olmalı');
+        }
+
+        // Yeni şifreyi hash'le
+        const saltRounds = 10;
+        const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+
+        // Şifreyi güncelle
+        await userRepository.updatePassword(userId, newPasswordHash);
+
+        return {
+            message: 'Şifre başarıyla değiştirildi'
+        };
+    }
 }
 
 module.exports = new UserService();
