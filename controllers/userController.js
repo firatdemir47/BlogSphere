@@ -171,6 +171,43 @@ class UserController {
             });
         }
     }
+
+    // Şifre değiştirme
+    async changePassword(req, res) {
+        try {
+            const userId = req.user.userId;
+            const { currentPassword, newPassword } = req.body;
+
+            // Gerekli alanları kontrol et
+            if (!currentPassword || !newPassword) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Mevcut şifre ve yeni şifre gerekli'
+                });
+            }
+
+            // Yeni şifre uzunluğunu kontrol et
+            if (newPassword.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Yeni şifre en az 6 karakter olmalı'
+                });
+            }
+
+            const result = await userService.changePassword(userId, currentPassword, newPassword);
+
+            res.status(200).json({
+                success: true,
+                message: result.message
+            });
+
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
 }
 
 module.exports = new UserController();
