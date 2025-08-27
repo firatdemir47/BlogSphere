@@ -44,7 +44,7 @@ class UserRepository {
 
     // ID ile kullanıcı bulma
     async findById(id) {
-        const query = 'SELECT id, username, email, first_name, last_name, created_at FROM users WHERE id = $1';
+        const query = 'SELECT id, username, email, first_name, last_name, password_hash, created_at FROM users WHERE id = $1';
         
         try {
             const result = await pool.query(query, [id]);
@@ -90,6 +90,23 @@ class UserRepository {
         
         try {
             const result = await pool.query(query, [id]);
+            return result.rows[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Şifre güncelleme
+    async updatePassword(id, newPasswordHash) {
+        const query = `
+            UPDATE users 
+            SET password_hash = $1, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $2
+            RETURNING id
+        `;
+        
+        try {
+            const result = await pool.query(query, [newPasswordHash, id]);
             return result.rows[0];
         } catch (error) {
             throw error;
