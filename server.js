@@ -3,6 +3,9 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// JWT Secret key
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'blogsphere-super-secret-key-2024';
+
 // Middleware'ler
 app.use(cors());
 app.use(express.json());
