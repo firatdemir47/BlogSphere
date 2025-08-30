@@ -1,10 +1,17 @@
+// Environment variables yükle
+require('dotenv').config();
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// JWT Secret key
-process.env.JWT_SECRET = process.env.JWT_SECRET || 'blogsphere-super-secret-key-2024';
+// JWT Secret key - sadece environment variable kullan
+if (!process.env.JWT_SECRET) {
+  console.error("UYARI: JWT_SECRET environment variable tanımlanmamış!");
+  console.error("Lütfen .env dosyasında JWT_SECRET tanımlayın.");
+  process.exit(1);
+}
 
 // Middleware'ler
 app.use(cors());
