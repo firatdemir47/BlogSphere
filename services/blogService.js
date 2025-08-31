@@ -42,6 +42,11 @@ const getBlogsByCategory = async (categoryId) => {
   return await blogRepo.getBlogsByCategory(categoryId);
 };
 
+// Kategori adına göre blog'ları getirme
+const getBlogsByCategoryName = async (categoryName) => {
+  return await blogRepo.getBlogsByCategoryName(categoryName);
+};
+
 // Yazara göre blog'ları getirme
 const getBlogsByAuthor = async (authorId) => {
   return await blogRepo.getBlogsByAuthor(authorId);
@@ -72,6 +77,7 @@ module.exports = {
   editBlog, 
   removeBlog,
   getBlogsByCategory,
+  getBlogsByCategoryName,
   getBlogsByAuthor,
   searchBlogs,
   incrementViewCount,
