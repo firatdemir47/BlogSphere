@@ -71,7 +71,8 @@ class UserController {
             res.status(200).json({
                 success: true,
                 message: 'Giriş başarılı',
-                data: result
+                token: result.token,
+                user: result.user
             });
 
         } catch (error) {
