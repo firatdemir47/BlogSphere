@@ -9,6 +9,7 @@ const { authenticateToken, optionalAuth } = require('../middlewares/authMiddlewa
 // Public routes (authentication gerekmez)
 router.get("/", optionalAuth, blogController.getAllBlogs);
 router.get("/category/:categoryId", optionalAuth, blogController.getBlogsByCategory);
+router.get("/category-name/:categoryName", optionalAuth, blogController.getBlogsByCategoryName);
 router.get("/author/:authorId", optionalAuth, blogController.getBlogsByAuthor);
 router.get("/search", optionalAuth, blogController.searchBlogs);
 router.get("/popular", optionalAuth, blogController.getPopularBlogs);
