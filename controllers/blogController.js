@@ -102,6 +102,24 @@ const deleteBlog = async (req, res) => {
   }
 };
 
+// Kategori adına göre blog'ları getirme
+const getBlogsByCategoryName = async (req, res) => {
+  try {
+    const { categoryName } = req.params;
+    const blogs = await blogService.getBlogsByCategoryName(categoryName);
+    
+    res.json({
+      success: true,
+      data: blogs
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false,
+      error: err.message 
+    });
+  }
+};
+
 // Kategoriye göre blog'ları getirme
 const getBlogsByCategory = async (req, res) => {
   try {
@@ -208,6 +226,7 @@ module.exports = {
   updateBlog, 
   deleteBlog,
   getBlogsByCategory,
+  getBlogsByCategoryName,
   getBlogsByAuthor,
   searchBlogs,
   incrementViewCount,
