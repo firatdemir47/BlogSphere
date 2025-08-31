@@ -37,7 +37,7 @@ class CategoryService {
     // Yeni kategori oluşturma
     async createCategory(categoryData) {
         try {
-            const { name, description } = categoryData;
+            const { name, description, icon, color } = categoryData;
 
             // Kategori adı kontrolü
             if (!name || name.trim().length === 0) {
@@ -52,7 +52,9 @@ class CategoryService {
 
             const newCategory = await categoryRepository.createCategory({
                 name: name.trim(),
-                description: description || ''
+                description: description || '',
+                icon: icon || '📚',
+                color: color || '#007bff'
             });
 
             return newCategory;
@@ -64,7 +66,7 @@ class CategoryService {
     // Kategori güncelleme
     async updateCategory(id, updateData) {
         try {
-            const { name, description } = updateData;
+            const { name, description, icon, color } = updateData;
 
             // Kategori var mı kontrolü
             const existingCategory = await categoryRepository.findById(id);
@@ -87,7 +89,9 @@ class CategoryService {
 
             const updatedCategory = await categoryRepository.updateCategory(id, {
                 name: name.trim(),
-                description: description || ''
+                description: description || '',
+                icon: icon || '📚',
+                color: color || '#007bff'
             });
 
             return updatedCategory;
