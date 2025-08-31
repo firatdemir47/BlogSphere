@@ -28,6 +28,9 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 
+// Auth routes için alias (frontend uyumluluğu için)
+app.use("/api/auth", userRoutes);
+
 // Sağlık kontrol endpoint'i
 app.get("/api/health", (req, res) => {
   res.status(200).json({ 
