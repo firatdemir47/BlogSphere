@@ -59,7 +59,7 @@ class CategoryController {
     // Yeni kategori oluşturma
     async createCategory(req, res) {
         try {
-            const { name, description } = req.body;
+            const { name, description, icon, color } = req.body;
 
             // Gerekli alanları kontrol et
             if (!name) {
@@ -71,7 +71,9 @@ class CategoryController {
 
             const newCategory = await categoryService.createCategory({
                 name,
-                description
+                description,
+                icon: icon || '📚',
+                color: color || '#007bff'
             });
 
             res.status(201).json({
@@ -92,7 +94,7 @@ class CategoryController {
     async updateCategory(req, res) {
         try {
             const { id } = req.params;
-            const { name, description } = req.body;
+            const { name, description, icon, color } = req.body;
 
             // Gerekli alanları kontrol et
             if (!name) {
@@ -104,7 +106,9 @@ class CategoryController {
 
             const updatedCategory = await categoryService.updateCategory(id, {
                 name,
-                description
+                description,
+                icon: icon || '📚',
+                color: color || '#007bff'
             });
 
             res.status(200).json({
