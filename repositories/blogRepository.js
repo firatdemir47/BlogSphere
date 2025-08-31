@@ -59,6 +59,20 @@ const getBlogsByCategory = async (categoryId) => {
   return result.rows;
 };
 
+// Kategori adına göre blog'ları getirme
+const getBlogsByCategoryName = async (categoryName) => {
+  const query = `
+    SELECT b.*, u.username as author_name, c.name as category_name
+    FROM blogs b
+    LEFT JOIN users u ON b.author_id = u.id
+    LEFT JOIN categories c ON b.category_id = c.id
+    WHERE c.name = $1
+    ORDER BY b.created_at DESC
+  `;
+  const result = await pool.query(query, [categoryName]);
+  return result.rows;
+};
+
 // Kullanıcıya göre blog'ları getirme
 const getBlogsByAuthor = async (authorId) => {
   const query = `
@@ -117,6 +131,7 @@ module.exports = {
   updateBlog, 
   deleteBlog,
   getBlogsByCategory,
+  getBlogsByCategoryName,
   getBlogsByAuthor,
   searchBlogs,
   incrementViewCount,
