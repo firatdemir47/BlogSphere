@@ -3,15 +3,15 @@ const pool = require('../db');
 class CategoryRepository {
     // Kategori oluşturma
     async createCategory(categoryData) {
-        const { name, description } = categoryData;
+        const { name, description, icon, color } = categoryData;
         const query = `
-            INSERT INTO categories (name, description)
-            VALUES ($1, $2)
+            INSERT INTO categories (name, description, icon, color)
+            VALUES ($1, $2, $3, $4)
             RETURNING *
         `;
         
         try {
-            const result = await pool.query(query, [name, description]);
+            const result = await pool.query(query, [name, description, icon, color]);
             return result.rows[0];
         } catch (error) {
             throw error;
@@ -56,16 +56,16 @@ class CategoryRepository {
 
     // Kategori güncelleme
     async updateCategory(id, updateData) {
-        const { name, description } = updateData;
+        const { name, description, icon, color } = updateData;
         const query = `
             UPDATE categories 
-            SET name = $1, description = $2
-            WHERE id = $3
+            SET name = $1, description = $2, icon = $3, color = $4
+            WHERE id = $5
             RETURNING *
         `;
         
         try {
-            const result = await pool.query(query, [name, description, id]);
+            const result = await pool.query(query, [name, description, icon, color, id]);
             return result.rows[0];
         } catch (error) {
             throw error;
@@ -102,7 +102,7 @@ class CategoryRepository {
             SELECT c.*, COUNT(b.id) as blog_count
             FROM categories c
             LEFT JOIN blogs b ON c.id = b.category_id
-            GROUP BY c.id, c.name, c.description, c.created_at
+            GROUP BY c.id, c.name, c.description, c.icon, c.color, c.created_at
             ORDER BY c.name ASC
         `;
         
