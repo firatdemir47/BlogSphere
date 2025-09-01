@@ -2,7 +2,8 @@ const pool = require('../db');
 
 const getAllBlogs = async () => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
@@ -14,7 +15,8 @@ const getAllBlogs = async () => {
 
 const getBlogById = async (id) => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
@@ -48,7 +50,8 @@ const deleteBlog = async (id) => {
 // Kategoriye göre blog'ları getirme
 const getBlogsByCategory = async (categoryId) => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
@@ -62,7 +65,8 @@ const getBlogsByCategory = async (categoryId) => {
 // Kategori adına göre blog'ları getirme
 const getBlogsByCategoryName = async (categoryName) => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
@@ -76,7 +80,8 @@ const getBlogsByCategoryName = async (categoryName) => {
 // Kullanıcıya göre blog'ları getirme
 const getBlogsByAuthor = async (authorId) => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
@@ -90,7 +95,8 @@ const getBlogsByAuthor = async (authorId) => {
 // Blog arama
 const searchBlogs = async (searchTerm) => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
@@ -113,7 +119,8 @@ const incrementViewCount = async (blogId) => {
 // En popüler blog'ları getirme (view count'a göre)
 const getPopularBlogs = async (limit = 10) => {
   const query = `
-    SELECT b.*, u.username as author_name, c.name as category_name
+    SELECT b.*, u.username as author_name, c.name as category_name,
+           b.like_count, b.dislike_count, b.bookmark_count
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id

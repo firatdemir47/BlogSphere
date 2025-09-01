@@ -1,8 +1,9 @@
 const commentRepo = require('../repositories/commentRepository');
+const notificationService = require('./notificationService');
 
 const listComments = (blogId) => commentRepo.getCommentsByBlogId(blogId);
 
-const addComment = (blogId, data) => {
+const addComment = async (blogId, data) => {
   const content = (data && typeof data.content === 'string') ? data.content.trim() : '';
   const authorId = data.authorId;
 
@@ -14,7 +15,16 @@ const addComment = (blogId, data) => {
     throw new Error('Kullanıcı ID gerekli');
   }
 
-  return commentRepo.createComment({ blogId, content, authorId });
+  const comment = await commentRepo.createComment({ blogId, content, authorId });
+  
+  // Blog yazarına bildirim gönder
+  try {
+    await notificationService.createCommentNotification(blogId, comment.id, authorId);
+  } catch (error) {
+    console.error('Bildirim gönderilirken hata:', error);
+  }
+
+  return comment;
 };
 
 const removeComment = async (id, authorId) => {

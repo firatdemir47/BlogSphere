@@ -22,11 +22,19 @@ const blogRoutes = require("./routes/blogRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const userRoutes = require("./routes/userRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const reactionRoutes = require("./routes/reactionRoutes");
+const bookmarkRoutes = require("./routes/bookmarkRoutes");
+const tagRoutes = require("./routes/tagRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/reactions", reactionRoutes);
+app.use("/api/bookmarks", bookmarkRoutes);
+app.use("/api/tags", tagRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Auth routes için alias (frontend uyumluluğu için)
 app.use("/api/auth", userRoutes);
@@ -65,4 +73,8 @@ app.listen(PORT, () => {
   console.log(`- Users: http://localhost:${PORT}/api/users`);
   console.log(`- Categories: http://localhost:${PORT}/api/categories`);
   console.log(`- Comments: http://localhost:${PORT}/api/comments`);
+  console.log(`- Reactions: http://localhost:${PORT}/api/reactions`);
+  console.log(`- Bookmarks: http://localhost:${PORT}/api/bookmarks`);
+  console.log(`- Tags: http://localhost:${PORT}/api/tags`);
+  console.log(`- Notifications: http://localhost:${PORT}/api/notifications`);
 });
