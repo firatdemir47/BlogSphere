@@ -26,6 +26,8 @@ const reactionRoutes = require("./routes/reactionRoutes");
 const bookmarkRoutes = require("./routes/bookmarkRoutes");
 const tagRoutes = require("./routes/tagRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+const passwordResetRoutes = require("./routes/passwordResetRoutes");
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentRoutes);
@@ -35,6 +37,11 @@ app.use("/api/reactions", reactionRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/password-reset", passwordResetRoutes);
+
+// Static dosya servisi
+app.use('/uploads', express.static('uploads'));
 
 // Auth routes için alias (frontend uyumluluğu için)
 app.use("/api/auth", userRoutes);
