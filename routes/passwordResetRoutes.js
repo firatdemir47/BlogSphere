@@ -29,3 +29,6 @@ router.get('/verify-email/:token', verifyEmail);
 router.get('/check-token/:token', checkTokenStatus);
 
 module.exports = router;
+
+
+
