@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-const getAllBlogs = async () => {
+const getAllBlogs = async (limit = 10, offset = 0) => {
   const query = `
     SELECT b.*, u.username as author_name, c.name as category_name,
            b.like_count, b.dislike_count, b.bookmark_count
@@ -8,9 +8,16 @@ const getAllBlogs = async () => {
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
     ORDER BY b.created_at DESC
+    LIMIT $1 OFFSET $2
   `;
-  const result = await pool.query(query);
+  const result = await pool.query(query, [limit, offset]);
   return result.rows;
+};
+
+const getBlogsCount = async () => {
+  const query = 'SELECT COUNT(*) as total FROM blogs';
+  const result = await pool.query(query);
+  return parseInt(result.rows[0].total);
 };
 
 const getBlogById = async (id) => {
@@ -133,6 +140,7 @@ const getPopularBlogs = async (limit = 10) => {
 
 module.exports = { 
   getAllBlogs, 
+  getBlogsCount,
   getBlogById, 
   createBlog, 
   updateBlog, 

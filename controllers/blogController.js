@@ -2,10 +2,15 @@ const blogService = require('../services/blogService');
 
 const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await blogService.listAllBlogs();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    
+    const result = await blogService.listAllBlogs(page, limit);
+    
     res.json({
       success: true,
-      data: blogs
+      data: result.blogs,
+      pagination: result.pagination
     });
   } catch (err) {
     console.error(err);

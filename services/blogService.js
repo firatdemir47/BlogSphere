@@ -1,6 +1,22 @@
 const blogRepo = require('../repositories/blogRepository');
 
-const listAllBlogs = () => blogRepo.getAllBlogs();
+const listAllBlogs = async (page = 1, limit = 10) => {
+  const offset = (page - 1) * limit;
+  const blogs = await blogRepo.getAllBlogs(limit, offset);
+  const totalCount = await blogRepo.getBlogsCount();
+  
+  return {
+    blogs,
+    pagination: {
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalItems: totalCount,
+      itemsPerPage: limit,
+      hasNextPage: page < Math.ceil(totalCount / limit),
+      hasPrevPage: page > 1
+    }
+  };
+};
 
 const getBlog = async (id) => {
   const blog = await blogRepo.getBlogById(id);
