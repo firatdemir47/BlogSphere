@@ -41,11 +41,21 @@ const createBlog = async (req, res) => {
     const { title, content, categoryId } = req.body;
     const authorId = req.user.userId; // JWT middleware'den gelir
 
+    console.log('Blog oluşturma isteği:', { title, content, categoryId, authorId });
+
+    // Validation kontrolü
+    if (!title || !content || !categoryId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Başlık, içerik ve kategori ID gerekli'
+      });
+    }
+
     const blog = await blogService.addBlog({
       title,
       content,
       authorId,
-      categoryId
+      categoryId: parseInt(categoryId)
     });
 
     res.status(201).json({
@@ -54,6 +64,7 @@ const createBlog = async (req, res) => {
       data: blog
     });
   } catch (err) {
+    console.error('Blog oluşturma hatası:', err);
     res.status(400).json({ 
       success: false,
       error: err.message 
