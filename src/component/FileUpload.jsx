@@ -18,6 +18,18 @@ const FileUpload = ({ onUpload, type = 'blog-image', multiple = false, maxFiles 
       return
     }
 
+    // Dosya adı kontrolü
+    const invalidNames = files.filter(file => {
+      const fileName = file.name.toLowerCase()
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+      return !validExtensions.some(ext => fileName.endsWith(ext))
+    })
+    
+    if (invalidNames.length > 0) {
+      setError('Dosya adları geçersiz uzantıya sahip. Sadece .jpg, .jpeg, .png, .gif, .webp uzantıları kabul edilir.')
+      return
+    }
+
     // Dosya boyutu kontrolü (5MB)
     const maxSize = 5 * 1024 * 1024
     const oversizedFiles = files.filter(file => file.size > maxSize)
@@ -72,7 +84,17 @@ const FileUpload = ({ onUpload, type = 'blog-image', multiple = false, maxFiles 
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Dosya yükleme başarısız')
+        console.error('Upload error response:', errorData)
+        
+        // Hata mesajını daha kullanıcı dostu hale getir
+        let errorMessage = errorData.message || 'Dosya yükleme başarısız'
+        
+        // Pattern hatası için özel mesaj
+        if (errorMessage.includes('pattern') || errorMessage.includes('string')) {
+          errorMessage = 'Dosya formatı desteklenmiyor. Lütfen JPG, PNG, GIF veya WebP formatında bir resim seçin.'
+        }
+        
+        throw new Error(errorMessage)
       }
 
       const result = await response.json()
