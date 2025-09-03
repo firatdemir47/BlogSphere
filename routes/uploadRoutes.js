@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const { authenticateToken } = require('../middlewares/authMiddleware');
 const { 
   upload, 
@@ -23,6 +24,47 @@ router.post('/blog-image',
     });
   }
 );
+
+// Multer hata yakalama middleware'i
+router.use((error, req, res, next) => {
+  console.error('Upload error:', error);
+  
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        message: 'Dosya boyutu çok büyük (maksimum 5MB)'
+      });
+    }
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({
+        success: false,
+        message: 'Çok fazla dosya seçildi (maksimum 5 dosya)'
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: `Dosya yükleme hatası: ${error.message}`
+    });
+  }
+  
+  // Dosya tipi ve uzantı hataları
+  if (error.message.includes('Geçersiz dosya tipi') || 
+      error.message.includes('Geçersiz dosya uzantısı') ||
+      error.message.includes('Dosya adı geçersiz')) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+  
+  // Genel hata
+  return res.status(500).json({
+    success: false,
+    message: 'Dosya yükleme sırasında beklenmeyen bir hata oluştu',
+    error: error.message
+  });
+});
 
 // Avatar yükleme
 router.post('/avatar', 
