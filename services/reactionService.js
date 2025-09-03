@@ -10,6 +10,22 @@ class ReactionService {
                 throw new Error('Geçersiz reaction tipi');
             }
 
+            // Mevcut reaction sayılarını kontrol et
+            const currentCounts = await this.getBlogReactionCounts(blogId);
+            const currentLikeCount = parseInt(currentCounts.like_count) || 0;
+            const currentDislikeCount = parseInt(currentCounts.dislike_count) || 0;
+
+            // Limit kontrolü (maksimum 50 like/dislike)
+            const MAX_REACTIONS = 50;
+            
+            if (reactionType === 'like' && currentLikeCount >= MAX_REACTIONS) {
+                throw new Error('Bu blog için maksimum like sayısına ulaşıldı (50)');
+            }
+            
+            if (reactionType === 'dislike' && currentDislikeCount >= MAX_REACTIONS) {
+                throw new Error('Bu blog için maksimum dislike sayısına ulaşıldı (50)');
+            }
+
             // Reaction ekle/güncelle
             const reaction = await reactionRepository.addReaction(userId, blogId, reactionType);
             
