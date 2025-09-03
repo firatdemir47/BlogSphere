@@ -22,6 +22,14 @@ const addReaction = async (req, res) => {
             data: reaction
         });
     } catch (error) {
+        // Limit hatası kontrolü
+        if (error.message.includes('maksimum')) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Reaction eklenirken hata oluştu',
@@ -129,6 +137,14 @@ const toggleReaction = async (req, res) => {
             });
         }
     } catch (error) {
+        // Limit hatası kontrolü
+        if (error.message.includes('maksimum')) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Reaction toggle edilirken hata oluştu',
