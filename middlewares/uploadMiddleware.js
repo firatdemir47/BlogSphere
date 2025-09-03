@@ -10,18 +10,42 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/temp');
   },
   filename: (req, file, cb) => {
-    const uniqueName = `${uuidv4()}-${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
+    // Dosya uzantısını al
+    const ext = path.extname(file.originalname).toLowerCase();
+    // Geçerli uzantıları kontrol et
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    
+    if (!validExtensions.includes(ext)) {
+      return cb(new Error('Geçersiz dosya uzantısı. Sadece JPG, PNG, GIF, WebP dosyaları kabul edilir.'));
+    }
+    
+    // Güvenli dosya adı oluştur (sadece alfanumerik karakterler ve tire)
+    const timestamp = Date.now();
+    const randomId = uuidv4().replace(/[^a-zA-Z0-9]/g, '');
+    const safeName = `blog-${timestamp}-${randomId}${ext}`;
+    
+    cb(null, safeName);
   }
 });
 
 // File filter
 const fileFilter = (req, file, cb) => {
-  // Sadece resim dosyalarını kabul et
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
+  // Dosya tipini kontrol et
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    // Dosya adını da kontrol et
+    const fileName = file.originalname.toLowerCase();
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (hasValidExtension) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Dosya adı geçersiz uzantıya sahip: ${file.originalname}`), false);
+    }
   } else {
-    cb(new Error('Sadece resim dosyaları kabul edilir!'), false);
+    cb(new Error(`Geçersiz dosya tipi: ${file.mimetype}. Sadece resim dosyaları kabul edilir!`), false);
   }
 };
 
@@ -98,7 +122,8 @@ const uploadBlogImage = async (req, res, next) => {
     console.error('Blog resmi yükleme hatası:', error);
     res.status(500).json({
       success: false,
-      message: 'Resim yüklenirken hata oluştu'
+      message: 'Resim yüklenirken hata oluştu',
+      error: error.message
     });
   }
 };
