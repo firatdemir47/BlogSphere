@@ -122,18 +122,34 @@ const toggleReaction = async (req, res) => {
         if (currentReaction && currentReaction.reaction_type === reactionType) {
             // Aynı reaction varsa kaldır
             await reactionService.removeReaction(userId, blogId);
+            
+            // Güncel reaction detaylarını getir
+            const updatedDetails = await reactionService.getBlogReactionDetails(blogId, userId);
+            
             return res.status(200).json({
                 success: true,
                 message: 'Reaction kaldırıldı',
-                action: 'removed'
+                action: 'removed',
+                data: {
+                    reactions: updatedDetails,
+                    userReaction: updatedDetails.userReaction
+                }
             });
         } else {
             // Farklı reaction varsa güncelle, yoksa ekle
             await reactionService.addReaction(userId, blogId, reactionType);
+            
+            // Güncel reaction detaylarını getir
+            const updatedDetails = await reactionService.getBlogReactionDetails(blogId, userId);
+            
             return res.status(200).json({
                 success: true,
                 message: 'Reaction güncellendi',
-                action: 'updated'
+                action: 'updated',
+                data: {
+                    reactions: updatedDetails,
+                    userReaction: updatedDetails.userReaction
+                }
             });
         }
     } catch (error) {
