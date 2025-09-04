@@ -13,10 +13,20 @@ const getCommentsByBlogId = async (blogId) => {
 };
 
 const createComment = async ({ blogId, content, authorId }) => {
-  const result = await pool.query(
+  // Önce yorumu ekle
+  const insertResult = await pool.query(
     "INSERT INTO comments (blog_id, content, author_id) VALUES ($1, $2, $3) RETURNING *",
     [blogId, content, authorId]
   );
+  
+  // Sonra yazar bilgisiyle birlikte getir
+  const query = `
+    SELECT c.*, u.username as author_name
+    FROM comments c
+    LEFT JOIN users u ON c.author_id = u.id
+    WHERE c.id = $1
+  `;
+  const result = await pool.query(query, [insertResult.rows[0].id]);
   return result.rows[0];
 };
 
