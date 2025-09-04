@@ -39,8 +39,8 @@ class UserService {
                 id: newUser.id,
                 username: newUser.username,
                 email: newUser.email,
-                firstName: newUser.first_name,
-                lastName: newUser.last_name
+                first_name: newUser.first_name,
+                last_name: newUser.last_name
             },
             token
         };
@@ -70,8 +70,8 @@ class UserService {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                firstName: user.first_name,
-                lastName: user.last_name
+                first_name: user.first_name,
+                last_name: user.last_name
             },
             token
         };
@@ -88,9 +88,9 @@ class UserService {
             id: user.id,
             username: user.username,
             email: user.email,
-            firstName: user.first_name,
-            lastName: user.last_name,
-            createdAt: user.created_at
+            first_name: user.first_name,
+            last_name: user.last_name,
+            created_at: user.created_at
         };
     }
 
@@ -102,9 +102,9 @@ class UserService {
             id: updatedUser.id,
             username: updatedUser.username,
             email: updatedUser.email,
-            firstName: updatedUser.first_name,
-            lastName: updatedUser.last_name,
-            updatedAt: updatedUser.updated_at
+            first_name: updatedUser.first_name,
+            last_name: updatedUser.last_name,
+            updated_at: updatedUser.updated_at
         };
     }
 
