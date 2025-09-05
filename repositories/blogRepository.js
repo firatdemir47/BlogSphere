@@ -115,12 +115,84 @@ const searchBlogs = async (searchTerm) => {
 };
 
 // View counter artırma
-const incrementViewCount = async (blogId) => {
-  const result = await pool.query(
-    "UPDATE blogs SET view_count = view_count + 1 WHERE id = $1 RETURNING view_count",
-    [blogId]
-  );
-  return result.rows[0]?.view_count || 0;
+const incrementViewCount = async (blogId, userId = null, ipAddress = null) => {
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+    
+    // Blog'un yazarını kontrol et - yazar kendi blogunu görüntülediğinde view count artmasın
+    const blogResult = await client.query(
+      "SELECT author_id FROM blogs WHERE id = $1",
+      [blogId]
+    );
+    
+    if (!blogResult.rows[0]) {
+      throw new Error('Blog bulunamadı');
+    }
+    
+    const authorId = blogResult.rows[0].author_id;
+    
+    // Eğer kullanıcı blog'un yazarıysa view count artırma
+    if (userId && userId === authorId) {
+      const currentViewCount = await client.query(
+        "SELECT view_count FROM blogs WHERE id = $1",
+        [blogId]
+      );
+      await client.query('COMMIT');
+      return currentViewCount.rows[0]?.view_count || 0;
+    }
+    
+    // Kullanıcı daha önce bu blogu görüntülemiş mi kontrol et
+    let alreadyViewed = false;
+    
+    if (userId) {
+      // Giriş yapmış kullanıcı için user_id ile kontrol
+      const userViewResult = await client.query(
+        "SELECT id FROM blog_views WHERE blog_id = $1 AND user_id = $2",
+        [blogId, userId]
+      );
+      alreadyViewed = userViewResult.rows.length > 0;
+    } else if (ipAddress) {
+      // Anonim kullanıcı için IP adresi ile kontrol (sadece user_id NULL olan kayıtlar)
+      const ipViewResult = await client.query(
+        "SELECT id FROM blog_views WHERE blog_id = $1 AND ip_address = $2 AND user_id IS NULL",
+        [blogId, ipAddress]
+      );
+      alreadyViewed = ipViewResult.rows.length > 0;
+    }
+    
+    // Eğer daha önce görüntülenmişse view count artırma
+    if (alreadyViewed) {
+      const currentViewCount = await client.query(
+        "SELECT view_count FROM blogs WHERE id = $1",
+        [blogId]
+      );
+      await client.query('COMMIT');
+      return currentViewCount.rows[0]?.view_count || 0;
+    }
+    
+    // View count'u artır
+    const result = await client.query(
+      "UPDATE blogs SET view_count = view_count + 1 WHERE id = $1 RETURNING view_count",
+      [blogId]
+    );
+    
+    // Blog view kaydını ekle
+    await client.query(
+      "INSERT INTO blog_views (blog_id, user_id, ip_address) VALUES ($1, $2, $3)",
+      [blogId, userId, ipAddress]
+    );
+    
+    await client.query('COMMIT');
+    return result.rows[0]?.view_count || 0;
+    
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 // En popüler blog'ları getirme (view count'a göre)
