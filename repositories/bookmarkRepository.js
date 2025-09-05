@@ -34,7 +34,8 @@ class BookmarkRepository {
     async getUserBookmarks(userId, limit = 20, offset = 0) {
         const query = `
             SELECT b.*, u.username as author_name, c.name as category_name,
-                   COUNT(br.id) as like_count, COUNT(br2.id) as dislike_count
+                   COUNT(br.id) as like_count, COUNT(br2.id) as dislike_count,
+                   bk.created_at
             FROM bookmarks bk
             JOIN blogs b ON bk.blog_id = b.id
             LEFT JOIN users u ON b.author_id = u.id
@@ -42,7 +43,7 @@ class BookmarkRepository {
             LEFT JOIN blog_reactions br ON b.id = br.blog_id AND br.reaction_type = 'like'
             LEFT JOIN blog_reactions br2 ON b.id = br2.blog_id AND br2.reaction_type = 'dislike'
             WHERE bk.user_id = $1
-            GROUP BY b.id, u.username, c.name
+            GROUP BY b.id, u.username, c.name, bk.created_at
             ORDER BY bk.created_at DESC
             LIMIT $2 OFFSET $3
         `;
