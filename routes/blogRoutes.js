@@ -20,8 +20,8 @@ router.post("/", authenticateToken, validateBlog, blogController.createBlog);
 router.put("/:id", authenticateToken, validateBlogUpdate, blogController.updateBlog);
 router.delete("/:id", authenticateToken, blogController.deleteBlog);
 
-// View counter artırma (public route)
-router.post("/:blogId/view", blogController.incrementViewCount);
+// View counter artırma (public route - optionalAuth ile kullanıcı bilgisi varsa alır)
+router.post("/:blogId/view", optionalAuth, blogController.incrementViewCount);
 
 // Comment rotaları nested olarak
 router.use("/:blogId/comments", commentRoutes);
