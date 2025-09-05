@@ -74,11 +74,11 @@ const searchBlogs = async (searchTerm) => {
 };
 
 // View counter artırma
-const incrementViewCount = async (blogId) => {
+const incrementViewCount = async (blogId, userId = null, ipAddress = null) => {
   const blog = await blogRepo.getBlogById(blogId);
   if (!blog) throw new Error('Blog bulunamadı');
   
-  return await blogRepo.incrementViewCount(blogId);
+  return await blogRepo.incrementViewCount(blogId, userId, ipAddress);
 };
 
 // En popüler blog'ları getirme
