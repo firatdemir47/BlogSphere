@@ -3,10 +3,19 @@ const pool = require('../db');
 const getAllBlogs = async (limit = 10, offset = 0) => {
   const query = `
     SELECT b.*, u.username as author_name, c.name as category_name,
-           b.like_count, b.dislike_count, b.bookmark_count
+           b.like_count, b.dislike_count, b.bookmark_count,
+           COALESCE(
+             JSON_AGG(
+               JSON_BUILD_OBJECT('id', t.id, 'name', t.name, 'color', t.color)
+             ) FILTER (WHERE t.id IS NOT NULL), 
+             '[]'::json
+           ) as tags
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
+    LEFT JOIN blog_tags bt ON b.id = bt.blog_id
+    LEFT JOIN tags t ON bt.tag_id = t.id
+    GROUP BY b.id, u.username, c.name
     ORDER BY b.created_at DESC
     LIMIT $1 OFFSET $2
   `;
@@ -23,11 +32,20 @@ const getBlogsCount = async () => {
 const getBlogById = async (id) => {
   const query = `
     SELECT b.*, u.username as author_name, c.name as category_name,
-           b.like_count, b.dislike_count, b.bookmark_count
+           b.like_count, b.dislike_count, b.bookmark_count,
+           COALESCE(
+             JSON_AGG(
+               JSON_BUILD_OBJECT('id', t.id, 'name', t.name, 'color', t.color)
+             ) FILTER (WHERE t.id IS NOT NULL), 
+             '[]'::json
+           ) as tags
     FROM blogs b
     LEFT JOIN users u ON b.author_id = u.id
     LEFT JOIN categories c ON b.category_id = c.id
+    LEFT JOIN blog_tags bt ON b.id = bt.blog_id
+    LEFT JOIN tags t ON bt.tag_id = t.id
     WHERE b.id = $1
+    GROUP BY b.id, u.username, c.name
   `;
   const result = await pool.query(query, [id]);
   return result.rows[0];
