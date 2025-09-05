@@ -24,7 +24,17 @@ const getBlog = async (id) => {
   return blog;
 };
 
-const addBlog = (data) => blogRepo.createBlog(data);
+const addBlog = async (data) => {
+  const blog = await blogRepo.createBlog(data);
+  
+  // Etiketleri ekle
+  if (data.tags && data.tags.length > 0) {
+    const tagService = require('./tagService');
+    await tagService.addTagsToBlog(blog.id, data.tags);
+  }
+  
+  return blog;
+};
 
 const editBlog = async (id, data) => {
   const title = (data && typeof data.title === 'string') ? data.title.trim() : '';
