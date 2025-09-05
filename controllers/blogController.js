@@ -38,10 +38,10 @@ const getBlogById = async (req, res) => {
 
 const createBlog = async (req, res) => {
   try {
-    const { title, content, categoryId } = req.body;
+    const { title, content, categoryId, tags } = req.body;
     const authorId = req.user.userId; // JWT middleware'den gelir
 
-    console.log('Blog oluşturma isteği:', { title, content, categoryId, authorId });
+    console.log('Blog oluşturma isteği:', { title, content, categoryId, authorId, tags });
 
     // Validation kontrolü
     if (!title || !content || !categoryId) {
@@ -55,7 +55,8 @@ const createBlog = async (req, res) => {
       title,
       content,
       authorId,
-      categoryId: parseInt(categoryId)
+      categoryId: parseInt(categoryId),
+      tags: tags || []
     });
 
     res.status(201).json({
