@@ -202,7 +202,10 @@ const searchBlogs = async (req, res) => {
 const incrementViewCount = async (req, res) => {
   try {
     const { blogId } = req.params;
-    const newViewCount = await blogService.incrementViewCount(blogId);
+    const userId = req.user?.userId || null; // JWT middleware'den gelir (opsiyonel)
+    const ipAddress = req.ip || req.connection.remoteAddress || null;
+    
+    const newViewCount = await blogService.incrementViewCount(blogId, userId, ipAddress);
     
     res.json({
       success: true,
