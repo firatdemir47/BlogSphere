@@ -4,7 +4,7 @@ const bookmarkService = require('../services/bookmarkService');
 const addBookmark = async (req, res) => {
     try {
         const { blogId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const bookmark = await bookmarkService.addBookmark(userId, blogId);
 
@@ -26,7 +26,7 @@ const addBookmark = async (req, res) => {
 const removeBookmark = async (req, res) => {
     try {
         const { blogId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const bookmark = await bookmarkService.removeBookmark(userId, blogId);
 
@@ -47,7 +47,7 @@ const removeBookmark = async (req, res) => {
 // Kullanıcının bookmark'larını getir
 const getUserBookmarks = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user.userId;
         const { page = 1, limit = 20 } = req.query;
 
         const result = await bookmarkService.getUserBookmarks(userId, parseInt(page), parseInt(limit));
@@ -70,7 +70,7 @@ const getUserBookmarks = async (req, res) => {
 const checkBookmarkStatus = async (req, res) => {
     try {
         const { blogId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const isBookmarked = await bookmarkService.isBookmarked(userId, blogId);
 
@@ -91,7 +91,7 @@ const checkBookmarkStatus = async (req, res) => {
 const toggleBookmark = async (req, res) => {
     try {
         const { blogId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const result = await bookmarkService.toggleBookmark(userId, blogId);
 
@@ -112,7 +112,7 @@ const toggleBookmark = async (req, res) => {
 // Kullanıcının bookmark sayısını getir
 const getBookmarkCount = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const count = await bookmarkService.getUserBookmarkCount(userId);
 
